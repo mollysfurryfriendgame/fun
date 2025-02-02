@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Navigate } from "react-router-dom";
 
-const ProfileEx = () => {
+const Profile = () => {
   const { user, isAuthenticated } = useAuth0();
   const [serverResponse, setServerResponse] = useState("");
 
@@ -39,14 +40,16 @@ const ProfileEx = () => {
     sendUserData();
   }, [isAuthenticated, user]);
 
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    isAuthenticated && (
       <div>
         <h2>Welcome, {user.name}!</h2>
         <p>{serverResponse}</p>
       </div>
-    )
   );
 };
 
-export default ProfileEx;
+export default Profile;

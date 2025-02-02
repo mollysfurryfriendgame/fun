@@ -22,3 +22,25 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+
+
+
+/* Nav bar------------------------------- */
+nav {
+    background-color: #f8f8f8;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #ccc;
+  }
+
+  nav a {
+    text-decoration: none;
+    color: #007bff;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+
