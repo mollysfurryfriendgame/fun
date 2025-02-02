@@ -22,7 +22,7 @@ INTERNAL_IPS = ['127.0.0.1']
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'backend.authentication.Auth0JSONWebTokenAuthentication',  # Use custom Auth0 authentication
+        'core.authentication.Auth0JSONWebTokenAuthentication',  # Use custom Auth0 authentication
         'rest_framework.authentication.SessionAuthentication',  # Keep for DRF Browsable API
     ),
 }
@@ -34,3 +34,18 @@ CORS_ALLOWED_ORIGINS = config(
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 CORS_ALLOW_CREDENTIALS = True
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

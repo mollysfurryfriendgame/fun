@@ -9,6 +9,7 @@ function Home() {
     return (
         <div>
             <h1>Homepage</h1>
+            <h3>This is the landing page for signup/login</h3>
             <h2>{message}</h2>
             <button onClick={() => dispatch(setMessage('New Message from Home!'))}>
                 Update Message

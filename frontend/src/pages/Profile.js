@@ -3,9 +3,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Navigate } from "react-router-dom";
 
 const Profile = () => {
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [serverResponse, setServerResponse] = useState("");
+  const [userProfile, setUserProfile] = useState(null);
 
+  // Function to send user data to the backend
   useEffect(() => {
     const sendUserData = async () => {
       if (isAuthenticated) {
@@ -40,16 +42,62 @@ const Profile = () => {
     sendUserData();
   }, [isAuthenticated, user]);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  // Function to fetch UserProfile data from the backend
+useEffect(() => {
+  const fetchUserProfile = async () => {
+    if (isAuthenticated) {
+      try {
+        const token = await getAccessTokenSilently();
+        if (!token) {
+          return;
+        }
+        const response = await fetch("http://localhost:8000/userprofile/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  return (
+        if (response.ok) {
+          const data = await response.json();
+
+          setUserProfile(data);
+        } else {
+          console.error("❌ Failed to load user profile. Status:", response.status);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching user profile:", error);
+      }
+    }
+  };
+
+  if (serverResponse) {
+    fetchUserProfile();
+  }
+}, [isAuthenticated, getAccessTokenSilently, serverResponse]);
+
+if (!isAuthenticated) {
+  return <Navigate to="/" replace />;
+}
+
+return (
+  <div>
+    <h2>Welcome, {user.nickname}!</h2>
+    <h3>{user.email}</h3>
+    <img src={user.picture} alt={`${user.nickname}'s profile`} />
+    <p>{serverResponse}</p>
+
+    {userProfile && (
       <div>
-        <h2>Welcome, {user.name}!</h2>
-        <p>{serverResponse}</p>
+        <h4>Your Profile Info:</h4>
+        <p>Free Uploads Remaining: {userProfile.free_uploads_remaining}</p>
+        <p>Total Uploads: {userProfile.total_uploads}</p>
       </div>
-  );
+    )}
+  </div>
+);
+
 };
 
 export default Profile;

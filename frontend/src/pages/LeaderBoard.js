@@ -9,6 +9,7 @@ function Leaderboard() {
     return (
         <div>
             <h1>Leaderboard</h1>
+            <h3>This will display a list, featuring top three in big containers, then a centered ordered list that adjusts dynamically with votes.</h3>
             <h2>{message}</h2>
             <button onClick={() => dispatch(setMessage('New Message from Leaderboard!'))}>
                 Update Message

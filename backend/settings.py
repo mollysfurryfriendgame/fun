@@ -102,10 +102,16 @@ CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'core.authentication.Auth0JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # Optional for admin login
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
+
 
 # Auth0 Configuration
 AUTH0_DOMAIN = config('AUTH0_DOMAIN', default='your-auth0-domain.us.auth0.com')
@@ -115,6 +121,7 @@ AUTH0_M2M_CLIENT_SECRET = config('AUTH0_CLIENT_SECRET')
 
 # JWT Configuration
 SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
     'ALGORITHM': 'RS256',
     'AUDIENCE': AUTH0_API_IDENTIFIER,
     'ISSUER': f"https://{AUTH0_DOMAIN}/",

@@ -5,7 +5,7 @@ from .models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['user', 'free_uploads_remaining', 'total_uploads']
+        fields = ['free_uploads_remaining', 'total_uploads']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(read_only=True)
