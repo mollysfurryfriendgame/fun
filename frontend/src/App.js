@@ -9,6 +9,9 @@ import Game from "./pages/Game";
 import UnderConstruction from "./pages/UnderConstruction";
 import Nav from "./components/Nav";
 import ProtectedRoute from "./components/ProtectedRoute";
+import FetchTokenButton from "./pages/FetchTokenButton";
+import SuperStaffRoute from "./pages/SuperStaffRoute";
+import ReviewUploads from "./pages/ReviewUploads";
 
 
 function App() {
@@ -19,6 +22,7 @@ function App() {
         <div>
           <h1>Molly’s Furry Friend Game</h1>
           <Routes>
+          <Route path="/fetchtokenbutton" element={<FetchTokenButton />} />
           <Route path="/" element={<Home />} />
           <Route path="/leaderboard" element={<LeaderBoard />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -33,6 +37,12 @@ function App() {
             <Profile />
             </ProtectedRoute>
             } />
+            <Route path="/review-uploads" element={
+            <SuperStaffRoute>
+              <ReviewUploads />
+            </SuperStaffRoute>
+              }
+            />
           </Routes>
         </div>
       </Router>

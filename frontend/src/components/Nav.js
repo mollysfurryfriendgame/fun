@@ -33,6 +33,9 @@ const Nav = () => {
           <Link to="/profile" style={{ marginRight: "10px" }}>
             Profile
           </Link>
+          <Link to="/review-uploads" style={{ marginRight: "10px" }}>
+            Review Uploads
+          </Link>
         </>
       )}
     </nav>

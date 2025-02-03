@@ -12,15 +12,18 @@ const Profile = () => {
     const sendUserData = async () => {
       if (isAuthenticated) {
         try {
+          const token = await getAccessTokenSilently(); // Fetch the token
           const response = await fetch("http://localhost:8000/create-user/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Add token to Authorization header
             },
             body: JSON.stringify({
               email: user.email,
-              name: user.name,
+              name: user.name || user.nickname,
               picture: user.picture,
+              sub: user.sub, // Include the unique Auth0 sub identifier
             }),
           });
 
@@ -40,64 +43,62 @@ const Profile = () => {
     };
 
     sendUserData();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, getAccessTokenSilently]);
 
   // Function to fetch UserProfile data from the backend
-useEffect(() => {
-  const fetchUserProfile = async () => {
-    if (isAuthenticated) {
-      try {
-        const token = await getAccessTokenSilently();
-        if (!token) {
-          return;
-        }
-        const response = await fetch("http://localhost:8000/userprofile/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently();
+          if (!token) {
+            return;
+          }
+          const response = await fetch("http://localhost:8000/userprofile/", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-
-          setUserProfile(data);
-        } else {
-          console.error("❌ Failed to load user profile. Status:", response.status);
+          if (response.ok) {
+            const data = await response.json();
+            setUserProfile(data);
+          } else {
+            console.error("❌ Failed to load user profile. Status:", response.status);
+          }
+        } catch (error) {
+          console.error("❌ Error fetching user profile:", error);
         }
-      } catch (error) {
-        console.error("❌ Error fetching user profile:", error);
       }
+    };
+
+    if (serverResponse) {
+      fetchUserProfile();
     }
-  };
+  }, [isAuthenticated, getAccessTokenSilently, serverResponse]);
 
-  if (serverResponse) {
-    fetchUserProfile();
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
   }
-}, [isAuthenticated, getAccessTokenSilently, serverResponse]);
 
-if (!isAuthenticated) {
-  return <Navigate to="/" replace />;
-}
+  return (
+    <div>
+      <h2>Welcome, {user.name.split('@')[0] || user.nickname.split('@')[0]}!</h2>
+      <h3>{user.email}</h3>
+      <img src={user.picture} alt={`${user.name || user.nickname}'s profile`} />
+      <p>{serverResponse}</p>
 
-return (
-  <div>
-    <h2>Welcome, {user.nickname}!</h2>
-    <h3>{user.email}</h3>
-    <img src={user.picture} alt={`${user.nickname}'s profile`} />
-    <p>{serverResponse}</p>
-
-    {userProfile && (
-      <div>
-        <h4>Your Profile Info:</h4>
-        <p>Free Uploads Remaining: {userProfile.free_uploads_remaining}</p>
-        <p>Total Uploads: {userProfile.total_uploads}</p>
-      </div>
-    )}
-  </div>
-);
-
+      {userProfile && (
+        <div>
+          <h4>Your Profile Info:</h4>
+          <p>Free Uploads Remaining: {userProfile.free_uploads_remaining}</p>
+          <p>Total Uploads: {userProfile.total_uploads}</p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Profile;

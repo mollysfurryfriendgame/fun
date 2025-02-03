@@ -3,6 +3,7 @@ from decouple import config
 
 
 
+
 # Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -105,7 +106,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'core.authentication.Auth0JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # Optional for admin login
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -141,3 +142,18 @@ LOGGING = {
         'level': 'WARNING',
     },
 }
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP server, e.g., Gmail's
+EMAIL_PORT = 587  # Port for TLS (use 465 for SSL)
+EMAIL_USE_TLS = True  # Use TLS (or EMAIL_USE_SSL = True for SSL)
+EMAIL_HOST_USER = 'mollysfurryfriendgame@gmail.com'  # Replace with your email address
+EMAIL_HOST_PASSWORD = 'jueq fpqv byqg fidb'  # Replace with your email's app password
+DEFAULT_FROM_EMAIL = 'mollysfurryfriendgame@gmail.com'  # Optional
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

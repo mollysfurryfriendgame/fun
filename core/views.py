@@ -3,34 +3,66 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import UserSerializer, UserProfileSerializer
-from .models import UserProfile
+from .serializers import UserSerializer, UserProfileSerializer, UploadSerializer, AnimalSerializer
+from .models import UserProfile, Upload, Animal
 from .utils.auth import get_public_key
 from jwt import decode, InvalidTokenError
 from decouple import config
+from django.conf import settings
+from django.core.mail import send_mail
+from rest_framework.permissions import IsAdminUser
+from core.permissions import IsSuperStaff
+import logging
+from rest_framework.permissions import AllowAny
 
+
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 def create_or_update_user(request):
     try:
+        # Extract email, nickname, and sub from request data
         data = request.data
-        email = data.get('email')
-        name = data.get('name')
+        email = data.get("email")
+        nickname = data.get("name")  # Assuming 'name' represents nickname
+        sub = data.get("sub")
 
-        if not email or not name:
-            return Response({"error": "Email and name are required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not nickname or not sub:
+            return Response(
+                {"error": "Fields 'email', 'name', and 'sub' are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        user, created = User.objects.get_or_create(username=email, defaults={"email": email, "first_name": name})
+        # Get or create user using sub as the username
+        user, created = User.objects.get_or_create(
+            username=sub,  # Use `sub` as unique identifier
+            defaults={"email": email, "first_name": nickname},
+        )
+
+        # Update nickname if needed
+        if not created and user.first_name != nickname:
+            user.first_name = nickname
+            user.save()
 
         # Ensure UserProfile exists
-        if created or not hasattr(user, 'userprofile'):
-            UserProfile.objects.create(user=user)
+        user_profile, profile_created = UserProfile.objects.get_or_create(user=user)
 
         serializer = UserSerializer(user)
-        return Response({"message": "User created or updated successfully.", "user": serializer.data}, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "message": "User created or updated successfully.",
+                "user": serializer.data,
+                "profile_created": profile_created,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
 
 
 
@@ -72,3 +104,106 @@ def get_user_profile(request):
         return Response({"error": f"Invalid token: {str(e)}"}, status=403)
     except UserProfile.DoesNotExist:
         return Response({"error": "User profile not found"}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upload_animal(request):
+    """
+    Handle user animal uploads and notify admins via email.
+    """
+    serializer = UploadSerializer(data=request.data)
+    if serializer.is_valid():
+        upload = serializer.save(user=request.user)
+
+        # Send notification email to admin
+        send_mail(
+            subject="New Animal Upload to Review",
+            message=f"""
+You have a new upload to review:
+Name: {upload.name}
+Category: {upload.category}
+Uploaded By: {upload.user.username}
+""",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["mollysfurryfriendgame@gmail.com"],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Upload received and admin notified."}, status=201)
+    return Response(serializer.errors, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsSuperStaff])
+def approve_upload(request, upload_id):
+    try:
+        # Fetch the upload object
+        upload = Upload.objects.get(pk=upload_id)
+
+        # Create an Animal with the appropriate fields, including the user
+        animal = Animal.objects.create(
+            name=upload.name,
+            category=upload.category,
+            image=upload.image,
+            user=request.user,  # Associate the animal with the current user
+        )
+
+        # Delete the upload after creating the animal
+        upload.delete()
+
+        return Response({"detail": f"Upload approved. Animal '{animal.name}' created."}, status=200)
+
+    except Upload.DoesNotExist:
+        return Response({"detail": "Upload not found."}, status=404)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=400)
+
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsSuperStaff])
+def delete_upload(request, upload_id):
+    try:
+        upload = Upload.objects.get(pk=upload_id)
+        upload.delete()
+        return Response({"detail": "Upload deleted successfully."}, status=200)
+    except Upload.DoesNotExist:
+        return Response({"detail": "Upload not found."}, status=404)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=400)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])  # Ensure only superusers can delete
+def delete_animal(request, animal_id):
+    try:
+        animal = Animal.objects.get(pk=animal_id)
+        animal.delete()
+        return Response({"message": "Animal deleted successfully."}, status=200)
+    except Animal.DoesNotExist:
+        return Response({"error": "Animal not found."}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsSuperStaff])
+def upload_list(request):
+    if request.user.is_staff:
+        uploads = Upload.objects.all()
+    else:
+        uploads = Upload.objects.filter(user=request.user)
+    serializer = UploadSerializer(uploads, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def leaderboard_view(request, category):
+    """
+    Fetch the leaderboard for a specific category.
+    """
+    animals = Animal.objects.filter(category=category).order_by('-votes')
+    serializer = AnimalSerializer(animals, many=True)
+    return Response(serializer.data)
