@@ -36,6 +36,9 @@ const Nav = () => {
           <Link to="/review-uploads" style={{ marginRight: "10px" }}>
             Review Uploads
           </Link>
+          <Link to="https://doakmath.github.io/wesleys-dog-game/" style={{ marginRight: "10px" }}>
+            The Original Wesley's Dog Game
+          </Link>
         </>
       )}
     </nav>
