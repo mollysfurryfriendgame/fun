@@ -5,6 +5,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     free_uploads_remaining = models.IntegerField(default=1)
     total_uploads = models.IntegerField(default=0)
+    auth0_sub = models.CharField(max_length=255, unique=True, null=True, blank=True)  # Add auth0_sub field
 
     def __str__(self):
         return self.user.username

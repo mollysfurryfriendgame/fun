@@ -3,8 +3,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import UserSerializer, UserProfileSerializer, UploadSerializer, AnimalSerializer
-from .models import UserProfile, Upload, Animal
+from .serializers import UserSerializer, UserProfileSerializer, UploadSerializer, AnimalSerializer, VoteSerializer
+from .models import UserProfile, Upload, Animal, Vote
 from .utils.auth import get_public_key
 from jwt import decode, InvalidTokenError
 from decouple import config
@@ -14,6 +14,11 @@ from rest_framework.permissions import IsAdminUser
 from core.permissions import IsSuperStaff
 import logging
 from rest_framework.permissions import AllowAny
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+import random
+
 
 
 logger = logging.getLogger(__name__)
@@ -21,11 +26,10 @@ logger = logging.getLogger(__name__)
 @api_view(['POST'])
 def create_or_update_user(request):
     try:
-        # Extract email, nickname, and sub from request data
         data = request.data
         email = data.get("email")
         nickname = data.get("name")  # Assuming 'name' represents nickname
-        sub = data.get("sub")
+        sub = data.get("sub")  # Auth0 `sub` field
 
         if not email or not nickname or not sub:
             return Response(
@@ -39,13 +43,14 @@ def create_or_update_user(request):
             defaults={"email": email, "first_name": nickname},
         )
 
-        # Update nickname if needed
-        if not created and user.first_name != nickname:
-            user.first_name = nickname
-            user.save()
-
-        # Ensure UserProfile exists
-        user_profile, profile_created = UserProfile.objects.get_or_create(user=user)
+        # Ensure UserProfile exists and update the auth0_sub
+        user_profile, profile_created = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={"auth0_sub": sub},  # Add auth0_sub when creating the profile
+        )
+        if not profile_created and user_profile.auth0_sub != sub:
+            user_profile.auth0_sub = sub
+            user_profile.save()
 
         serializer = UserSerializer(user)
         return Response(
@@ -62,6 +67,8 @@ def create_or_update_user(request):
             {"error": f"An unexpected error occurred: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
 
 
 
@@ -207,3 +214,73 @@ def leaderboard_view(request, category):
     animals = Animal.objects.filter(category=category).order_by('-votes')
     serializer = AnimalSerializer(animals, many=True)
     return Response(serializer.data)
+
+
+@csrf_exempt
+def submit_vote(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            animal_id = data.get("animal_id")
+            user_sub = data.get("user_id")  # Auth0 `sub` field
+
+            if not animal_id or not user_sub:
+                return JsonResponse({"error": "Animal ID and User ID are required."}, status=400)
+
+            # Debug: Log user_sub being used
+            print(f"Looking for user with auth0_sub: {user_sub}")
+
+            # Fetch the UserProfile and associated user using `auth0_sub`
+            user_profile = UserProfile.objects.get(auth0_sub=user_sub)
+            user = user_profile.user  # Get the related User instance
+            animal = Animal.objects.get(id=animal_id)
+
+            # Create or update the vote
+            vote, created = Vote.objects.get_or_create(user=user, animal=animal, defaults={"vote_value": 1})
+
+            # Update vote and increment animal votes
+            if not created:
+                vote.vote_value += 1
+                vote.save()
+
+            animal.votes += 1
+            animal.save()
+
+            return JsonResponse({"message": "Vote successfully recorded."})
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"error": f"UserProfile with auth0_sub {user_sub} not found."}, status=404)
+        except Animal.DoesNotExist:
+            return JsonResponse({"error": "Animal not found."}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+
+def get_random_animals(request, category):
+    try:
+        # Fetch animals from the category
+        animals = list(Animal.objects.filter(category=category))
+
+        if len(animals) < 6:
+            return JsonResponse({"error": "Not enough animals in this category."}, status=400)
+
+        # Select 6 random animals
+        random_animals = random.sample(animals, 6)
+
+        # Serialize animal data
+        data = [
+            {
+                "id": animal.id,
+                "name": animal.name,
+                "description": animal.description,
+                "image": animal.image.url,
+                "votes": animal.votes,
+                "category": animal.category,
+            }
+            for animal in random_animals
+        ]
+
+        return JsonResponse(data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

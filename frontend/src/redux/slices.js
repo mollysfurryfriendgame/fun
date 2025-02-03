@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { jwtDecode } from 'jwt-decode'; // Ensure jwtDecode is imported
+import { jwtDecode } from 'jwt-decode'; // Ensure jwtDecode is imported correctly
 
 const initialState = {
     accessToken: null, // Store the token here
     animals: [], // Store leaderboard animals here
     isSuperUser: false, // Add initial state for superuser
+    selectedCategory: 'dog', // Default category
     message: 'Hello from Redux!',
 };
 
@@ -35,8 +36,11 @@ const appSlice = createSlice({
         setIsSuperUser: (state, action) => {
             state.isSuperUser = action.payload; // Explicitly set superuser state
         },
+        setCategory: (state, action) => {
+            state.selectedCategory = action.payload; // Update selected category
+        },
     },
 });
 
-export const { setAccessToken, setMessage, setAnimals, setIsSuperUser } = appSlice.actions;
+export const { setAccessToken, setMessage, setAnimals, setIsSuperUser, setCategory } = appSlice.actions;
 export default appSlice.reducer;

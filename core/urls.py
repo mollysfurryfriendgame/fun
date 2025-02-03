@@ -7,7 +7,9 @@ from .views import (
     upload_list,
     leaderboard_view,
     delete_upload,
-    delete_animal
+    delete_animal,
+    submit_vote,
+    get_random_animals,
 )
 
 
@@ -20,4 +22,6 @@ urlpatterns = [
     path('leaderboard/<str:category>/', leaderboard_view, name='leaderboard'),
     path('delete-upload/<int:upload_id>/', delete_upload, name='delete_upload'),
     path('delete-animal/<int:animal_id>/', delete_animal, name='delete_animal'),
+    path("get-random-animals/<str:category>/", get_random_animals, name="get_random_animals"),
+    path("submit-vote/", submit_vote, name="submit_vote"),
 ]

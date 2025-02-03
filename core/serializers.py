@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile, Upload, Animal
+from .models import UserProfile, Upload, Animal, Vote
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,3 +27,7 @@ class AnimalSerializer(serializers.ModelSerializer):
         model = Animal
         fields = ["id", "name", "category", "image", "votes", "user_nickname"]
 
+class VoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vote
+        fields = ["id", "user", "animal", "vote_value", "created_at"]

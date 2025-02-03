@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Navigate } from "react-router-dom";
 
+
 const Profile = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [serverResponse, setServerResponse] = useState("");
   const [userProfile, setUserProfile] = useState(null);
+
 
   // Function to send user data to the backend
   useEffect(() => {

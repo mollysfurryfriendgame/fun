@@ -1,42 +1,36 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setMessage } from "../redux/slices";
-
+import { useDispatch } from "react-redux";
+import { setCategory } from "../redux/slices";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const message = useSelector((state) => state.app.message);
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
+    const handleCategorySelect = (category) => {
+        dispatch(setCategory(category)); // Set the selected category
+        navigate("/leaderboard"); // Redirect to leaderboard
+    };
 
-
-
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <h2>Welcome!</h2>
-      <h3>{message}</h3>
-      <button
-        onClick={() => dispatch(setMessage("New Message from Dashboard!"))}
-      >
-        Update Message
-      </button>
-      <div>
-        <Link to="/game/dog">
-          <button style={{ margin: "10px" }}>Play Dog Game</button>
-        </Link>
-        <Link to="/game/cat">
-          <button style={{ margin: "10px" }}>Play Cat Game</button>
-        </Link>
-        <Link to="/game/horse">
-          <button style={{ margin: "10px" }}>Play Horse Game</button>
-        </Link>
-        <Link to="/game/bunbun">
-          <button style={{ margin: "10px" }}>Play Bunbun Game</button>
-        </Link>
-      </div>
-    </div>
-  );
+    return (
+        <div>
+            <h1>Dashboard</h1>
+            <div>
+                <button style={{ margin: "10px" }} onClick={() => handleCategorySelect("dog")}>
+                    Play Dog Game
+                </button>
+                <button style={{ margin: "10px" }} onClick={() => handleCategorySelect("cat")}>
+                    Play Cat Game
+                </button>
+                <button style={{ margin: "10px" }} onClick={() => handleCategorySelect("horse")}>
+                    Play Horse Game
+                </button>
+                <button style={{ margin: "10px" }} onClick={() => handleCategorySelect("bunbun")}>
+                    Play Bunbun Game
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default Dashboard;
