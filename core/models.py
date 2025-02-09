@@ -3,7 +3,7 @@ from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    free_uploads_remaining = models.IntegerField(default=1)
+    free_uploads_remaining = models.IntegerField(default=5)
     total_uploads = models.IntegerField(default=0)
     auth0_sub = models.CharField(max_length=255, unique=True, null=True, blank=True)  # Add auth0_sub field
 
@@ -46,6 +46,7 @@ class Upload(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     image = models.ImageField(upload_to='upload_images/')
+    description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

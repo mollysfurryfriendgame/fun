@@ -18,14 +18,17 @@ class UserSerializer(serializers.ModelSerializer):
 class UploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Upload
-        fields = ['id', 'name', 'category', 'image']
+        fields = ['id', 'name', 'category', 'image', 'description']  # Include description
+
 
 class AnimalSerializer(serializers.ModelSerializer):
-    user_nickname = serializers.CharField(source="user.first_name", read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Animal
-        fields = ["id", "name", "category", "image", "votes", "user_nickname"]
+        fields = ["id", "name", "description", "category", "image", "votes", "user"]
+
+
 
 class VoteSerializer(serializers.ModelSerializer):
     class Meta:

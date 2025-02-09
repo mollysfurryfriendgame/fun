@@ -37,7 +37,12 @@ function ReviewUploads() {
             },
           }
         )
-        .then((response) => setMessage(response.data.detail))
+        .then((response) => {
+          setMessage(response.data.detail);
+
+          // Remove the approved upload from the list
+          setUploads((prevUploads) => prevUploads.filter((upload) => upload.id !== id));
+        })
         .catch((error) => setMessage(error.response?.data?.detail || "An error occurred."));
     } else {
       setMessage("Access token is missing.");
@@ -54,7 +59,9 @@ function ReviewUploads() {
         })
         .then(() => {
           setMessage("Upload deleted successfully.");
-          setUploads((prevUploads) => prevUploads.filter((upload) => upload.id !== id)); // Update UI
+
+          // Remove the deleted upload from the list
+          setUploads((prevUploads) => prevUploads.filter((upload) => upload.id !== id));
         })
         .catch((error) => setMessage(error.response?.data?.detail || "An error occurred."));
     } else {
@@ -75,16 +82,20 @@ function ReviewUploads() {
               <p>
                 {upload.name} ({upload.category})
               </p>
+              <p>Description: {upload.description}</p> {/* Display description */}
               {upload.image && (
                 <img
                   src={`http://localhost:8000${upload.image}`}
                   alt={upload.name}
-                  style={{ width: "150px", height: "auto" }} // Adjust size as needed
+                  style={{ width: "150px", height: "auto" }}
                 />
               )}
               <button onClick={() => approveUpload(upload.id)}>Approve</button>
-              {isSuperUser && ( // Conditionally render the delete button
-                <button onClick={() => deleteUpload(upload.id)} style={{ marginLeft: "10px", color: "red" }}>
+              {isSuperUser && (
+                <button
+                  onClick={() => deleteUpload(upload.id)}
+                  style={{ marginLeft: "10px", color: "red" }}
+                >
                   Delete
                 </button>
               )}

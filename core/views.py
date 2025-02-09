@@ -132,7 +132,8 @@ def upload_animal(request):
 You have a new upload to review:
 Name: {upload.name}
 Category: {upload.category}
-Uploaded By: {upload.user.username}
+Uploaded By: {upload.user.email}
+Description: {upload.description}
 """,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=["mollysfurryfriendgame@gmail.com"],
@@ -147,19 +148,18 @@ Uploaded By: {upload.user.username}
 @permission_classes([IsAuthenticated, IsSuperStaff])
 def approve_upload(request, upload_id):
     try:
-        # Fetch the upload object
         upload = Upload.objects.get(pk=upload_id)
 
-        # Create an Animal with the appropriate fields, including the user
+        # Create an Animal with the description field
         animal = Animal.objects.create(
             name=upload.name,
             category=upload.category,
             image=upload.image,
-            user=request.user,  # Associate the animal with the current user
+            user=upload.user,  # Use the original uploader's user
+            description=upload.description  # Pass description
         )
 
-        # Delete the upload after creating the animal
-        upload.delete()
+        upload.delete()  # Delete the Upload after creating the Animal
 
         return Response({"detail": f"Upload approved. Animal '{animal.name}' created."}, status=200)
 
@@ -167,6 +167,7 @@ def approve_upload(request, upload_id):
         return Response({"detail": "Upload not found."}, status=404)
     except Exception as e:
         return Response({"detail": str(e)}, status=400)
+
 
 
 
