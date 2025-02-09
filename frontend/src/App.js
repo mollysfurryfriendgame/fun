@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import FetchTokenButton from "./pages/FetchTokenButton";
 import SuperStaffRoute from "./pages/SuperStaffRoute";
 import ReviewUploads from "./pages/ReviewUploads";
+import LocalStorageDisplay from "./components/LocalStorageDisplay"
+import UserProfileDisplay from "./components/UserProfileDisplay"
 
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <h1>Molly’s Furry Friend Game</h1>
           <Routes>
           <Route path="/fetchtokenbutton" element={<FetchTokenButton />} />
+          <Route path="/localStorageDisplay" element={<LocalStorageDisplay />} />
+          <Route path="/userProfileDisplay" element={<UserProfileDisplay />} />
           <Route path="/" element={<Home />} />
           <Route path="/leaderboard" element={<LeaderBoard />} />
           <Route path="/dashboard" element={<Dashboard />} />

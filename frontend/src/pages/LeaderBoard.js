@@ -73,7 +73,8 @@ function Leaderboard() {
                                     <div className="card-body">
                                         <h5 className="card-title">{animal.name}</h5>
                                         <p className="card-text">{animal.description}</p>
-                                        {/* <p className="text-muted">Submitted by: {animal.user_nickname.split("@")[0]}</p> */}
+                                        {console.log("animal: ", animal)}
+                                        <p className="text-muted">Submitted by: {animal.user_nickname.split("@")[0]}</p>
                                         <p className="text-primary">Votes: {animal.votes}</p>
                                         {isSuperUser && (
                                             <button

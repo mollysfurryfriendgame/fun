@@ -37,28 +37,29 @@ def create_or_update_user(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Get or create user using sub as the username
-        user, created = User.objects.get_or_create(
-            username=sub,  # Use `sub` as unique identifier
-            defaults={"email": email, "first_name": nickname},
-        )
+        # Find user by email
+        user = User.objects.filter(email=email).first()
 
-        # Ensure UserProfile exists and update the auth0_sub
-        user_profile, profile_created = UserProfile.objects.get_or_create(
-            user=user,
-            defaults={"auth0_sub": sub},  # Add auth0_sub when creating the profile
-        )
-        if not profile_created and user_profile.auth0_sub != sub:
-            user_profile.auth0_sub = sub
-            user_profile.save()
+        if user:
+            # Update existing user's profile if `sub` differs
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            if user_profile.auth0_sub != sub:
+                user_profile.auth0_sub = sub
+                user_profile.save()
+            message = "User updated successfully."
+        else:
+            # Create new user and profile
+            user = User.objects.create(
+                username=sub,  # Use `sub` as a fallback for the username
+                email=email,
+                first_name=nickname,
+            )
+            UserProfile.objects.create(user=user, auth0_sub=sub)
+            message = "User created successfully."
 
         serializer = UserSerializer(user)
         return Response(
-            {
-                "message": "User created or updated successfully.",
-                "user": serializer.data,
-                "profile_created": profile_created,
-            },
+            {"message": message, "user": serializer.data},
             status=status.HTTP_200_OK,
         )
 
@@ -67,6 +68,7 @@ def create_or_update_user(request):
             {"error": f"An unexpected error occurred: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
 
 
 

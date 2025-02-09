@@ -1,6 +1,21 @@
 from django.contrib import admin
-from .models import UserProfile
 from .models import Animal, Upload, Vote, UserProfile
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
+
+
+class CustomUserAdmin(UserAdmin):
+    # Specify the fields to display in the admin list view
+    list_display = ("email", "first_name", "is_staff")
+    search_fields = ("email", "first_name", "username")  # Allow searching by email, name, or username
+
+# Unregister the default User admin
+admin.site.unregister(User)
+
+# Register the custom User admin
+admin.site.register(User, CustomUserAdmin)
+
+
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):

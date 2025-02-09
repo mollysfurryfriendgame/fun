@@ -31,6 +31,7 @@ const Profile = () => {
 
           if (response.ok) {
             const data = await response.json();
+            console.log("data: ", data)
             setServerResponse(data.message);
           } else {
             const errorData = await response.json();
