@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setAnimals } from "../redux/slices"; // Assuming this action exists in your Redux slices
 import { jwtDecode } from "jwt-decode";
-
+import "./Game.css"; // Import the CSS file
 
 const Game = () => {
   const [currentPair, setCurrentPair] = useState([]); // Stores the current pair of animals
@@ -19,7 +19,6 @@ const Game = () => {
   const animals = useSelector((state) => state.app.animals); // Fetch animals from Redux
   const dispatch = useDispatch(); // To dispatch actions
 
-  // Fetch animals from the backend when the category changes
   useEffect(() => {
     const fetchAnimals = async () => {
       if (category) {
@@ -38,7 +37,6 @@ const Game = () => {
     fetchAnimals();
   }, [category, dispatch]);
 
-  // Initialize the first pair
   useEffect(() => {
     if (animals.length > 0) {
       setCurrentPair([animals[0], animals[1]]);
@@ -47,34 +45,16 @@ const Game = () => {
 
   const handleVote = async (selectedAnimal) => {
     try {
-      // Retrieve the token silently
       const token = await getAccessTokenSilently();
-
-      // Decode the token to extract the user ID
       const decodedToken = jwtDecode(token);
-      const userId = decodedToken.sub; // Assumes `sub` contains the user ID
+      const userId = decodedToken.sub;
 
-      // Validate user ID and animal ID
-      if (!userId || !selectedAnimal.id) {
-        throw new Error("Missing user ID or animal ID.");
-      }
-
-      // Debugging: Log the vote data
-      console.log("Submitting vote for:", {
-        animal_id: selectedAnimal.id,
-        user_id: userId,
-      });
-
-      // Make the API call to submit the vote
       const response = await axios.post("http://localhost:8000/submit-vote/", {
         animal_id: selectedAnimal.id,
         user_id: userId,
       });
 
       if (response.status === 200) {
-        console.log("Vote recorded successfully");
-
-        // Update the game state
         if (round <= 2) {
           setWinners((prevWinners) => [...prevWinners, selectedAnimal]);
 
@@ -91,13 +71,6 @@ const Game = () => {
           }
         } else if (round === 3) {
           setFinalWinner(selectedAnimal);
-
-          // Submit an additional vote for the final winner
-          await axios.post("http://localhost:8000/submit-vote/", {
-            animal_id: selectedAnimal.id,
-            user_id: userId,
-            vote_value: 2,
-          });
         }
       }
     } catch (error) {
@@ -105,36 +78,36 @@ const Game = () => {
     }
   };
 
-
-  // Loading state
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Final winner display
   if (finalWinner) {
     return (
-      <div>
+      <div className="final-winner-container">
         <h1>Final Winner: {finalWinner.name}</h1>
-        <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} style={{ width: "300px" }} />
+        <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} className="final-winner-image" />
         <p>{finalWinner.description}</p>
         <button onClick={() => window.location.reload()}>Play Again</button>
       </div>
     );
   }
 
-  // Main game render
   return (
-    <div>
+    <div className="game-container">
       <h1>Game - {category.charAt(0).toUpperCase() + category.slice(1)}</h1>
       {currentPair.length === 2 ? (
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div className="pair-container">
           {currentPair.map((animal) => (
-            <div key={animal.id} style={{ margin: "10px", textAlign: "center" }}>
-              <img src={`http://localhost:8000${animal.image}`} alt={animal.name} style={{ width: "200px", borderRadius: "10px" }} />
+            <div className="animal-card" key={animal.id}>
+              <img
+                src={`http://localhost:8000${animal.image}`}
+                alt={animal.name}
+                className="animal-image"
+              />
               <h2>{animal.name}</h2>
               <p>{animal.description}</p>
-              <button onClick={() => handleVote(animal)}>Select</button>
+              <button className="vote-button" onClick={() => handleVote(animal)}>Select</button>
             </div>
           ))}
         </div>

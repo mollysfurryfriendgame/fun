@@ -129,12 +129,6 @@ function Upload() {
         </button>
       </form>
       {uploadStatus && <p>{uploadStatus}</p>}
-      <button
-        onClick={() => dispatch(setMessage("New Message from Upload!"))}
-        style={{ marginTop: "20px", padding: "10px 20px", cursor: "pointer" }}
-      >
-        Update Message
-      </button>
     </div>
   );
 }
