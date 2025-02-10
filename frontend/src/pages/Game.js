@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setAnimals } from "../redux/slices"; // Assuming this action exists in your Redux slices
 import { jwtDecode } from "jwt-decode";
 import "./Game.css"; // Import the CSS file
+import DonateButton from "../components/DonateButton";
 
 const Game = () => {
   const [currentPair, setCurrentPair] = useState([]); // Stores the current pair of animals
@@ -96,16 +97,19 @@ const Game = () => {
 
   if (finalWinner) {
     return (
+      <>
       <div className="final-winner-container">
         <h1>Final Winner: {finalWinner.name}</h1>
         <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} className="final-winner-image" />
         <p>{finalWinner.description}</p>
         <button onClick={() => window.location.reload()}>Play Again</button>
       </div>
+      </>
     );
   }
 
   return (
+    <>
     <div className="game-container">
       <h1>Molly's  {category.charAt(0).toUpperCase() + category.slice(1)}  Game</h1>
       {currentPair.length === 2 ? (
@@ -127,6 +131,7 @@ const Game = () => {
         <p>No more pairs available.</p>
       )}
     </div>
+    </>
   );
 };
 

@@ -1,0 +1,28 @@
+.auth-button-container {
+    display: inline-block;
+    margin-left: 15px;
+    vertical-align: middle; /* Align with the other links */
+  }
+
+  .auth-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0 10px; /* Remove excess vertical padding */
+    font-size: 14px;
+    line-height: 1.5; /* Match text height with the links */
+    height: auto; /* Let the button resize to fit text */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block; /* Ensure inline alignment */
+    vertical-align: middle; /* Align text with links */
+  }
+
+  .auth-button:hover {
+    background-color: #0056b3;
+  }
+
+  .auth-button:active {
+    background-color: #003f7f;
+  }

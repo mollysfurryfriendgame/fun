@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Leaderboard.css";
-import DonateButton from "../components/DonateButton";
+
 
 function Leaderboard() {
   const animals = useSelector((state) => state.app.animals) || [];
@@ -50,9 +50,6 @@ function Leaderboard() {
 
   return (
     <>
-    <div style={{ marginBottom: "20px", textAlign: "center" }}>
-        <DonateButton />
-    </div>
     <div className="leaderboard-container">
       <div className="text-center mb-4">
         <button className="btn btn-primary" onClick={handlePlayGame}>

@@ -9,19 +9,20 @@ const Nav = () => {
   return (
     <nav style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
       {/* Links for all users */}
+      {/* <Link to="/" style={{ marginRight: "10px" }}>
+        Home
+        </Link> */}
       <Link to="/" style={{ marginRight: "10px" }}>
         Home
       </Link>
-      <Link to="/dashboard" style={{ marginRight: "10px" }}>
-        Dashboard
-      </Link>
-      <Link to="/leaderboard" style={{ marginRight: "10px" }}>
+      {/* <Link to="/leaderboard" style={{ marginRight: "10px" }}>
         Leaderboard
-      </Link>
+        </Link> */}
       <Link to="/contact" style={{ marginRight: "10px" }}>
         Contact
       </Link>
       <AuthButton />
+
 
 
       {/* Protected Links for Authenticated Users */}

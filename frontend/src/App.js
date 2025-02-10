@@ -16,6 +16,7 @@ import LocalStorageDisplay from "./components/LocalStorageDisplay"
 import UserProfileDisplay from "./components/UserProfileDisplay"
 import Contact from "./components/Contact";
 import AdminResetFreeUploads from "./pages/AdminResetFreeUploads"
+import DonateButton from "./components/DonateButton";
 
 
 function App() {
@@ -25,14 +26,15 @@ function App() {
         <Nav />
         <div>
           <h1>Molly’s Furry Friend Game</h1>
+          <DonateButton />
           <Routes>
           <Route path="/fetchtokenbutton" element={<FetchTokenButton />} />
           <Route path="/localStorageDisplay" element={<LocalStorageDisplay />} />
           <Route path="/userProfileDisplay" element={<UserProfileDisplay />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/leaderboard" element={<LeaderBoard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/game/:animalType" element={<Game />} />
           <Route path="/underconstruction" element={<UnderConstruction />} />
           <Route path="/upload" element={

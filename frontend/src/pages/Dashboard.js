@@ -2,7 +2,8 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { setCategory } from "../redux/slices";
 import { useNavigate } from "react-router-dom";
-import  DonateButton from "../components/DonateButton";
+
+import AuthButton from "../components/AuthButton";
 
 function Dashboard() {
     const dispatch = useDispatch();
@@ -15,12 +16,6 @@ function Dashboard() {
 
     return (
         <div>
-            {/* <h1>Molly's Furry Friend Game</h1> */}
-
-        {/* PayPal Donate Button (Styled like Original, Opens in New Window) */}
-        <div style={{ marginBottom: "20px", textAlign: "center" }}>
-            <DonateButton />
-        </div>
 
 
 
@@ -51,6 +46,8 @@ function Dashboard() {
                     <p>Chosen Shelter: </p>
                 </div>
             </div>
+            
+
         </div>
     );
 }
