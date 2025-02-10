@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setMessage } from "../redux/slices";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -14,6 +14,7 @@ function Upload() {
   const [category, setCategory] = useState("dog");
   const [description, setDescription] = useState("");
   const [uploadStatus, setUploadStatus] = useState(null);
+  const [freeUploads, setFreeUploads] = useState(0); // Track remaining uploads
 
   const onDrop = (acceptedFiles) => {
     setFile(acceptedFiles[0]); // Store the dropped file
@@ -21,8 +22,30 @@ function Upload() {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
+  // Fetch user profile and remaining uploads when the component loads
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const response = await axios.get("http://localhost:8000/userprofile/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setFreeUploads(response.data.profile.free_uploads_remaining);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [getAccessTokenSilently]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (freeUploads <= 0) {
+      alert("You have no uploads remaining. Please purchase more uploads.");
+      return;
+    }
 
     if (!file) {
       alert("Please upload an image file.");
@@ -45,6 +68,7 @@ function Upload() {
       });
       setUploadStatus("Upload successful!");
       dispatch(setMessage("New upload created successfully!"));
+      setFreeUploads((prev) => prev - 1); // Update the remaining uploads
       console.log("Upload successful:", response.data);
     } catch (error) {
       setUploadStatus("Upload failed.");
@@ -56,6 +80,7 @@ function Upload() {
     <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Upload</h1>
       <h2>Welcome, {user.nickname}!</h2>
+      <p>Remaining Uploads: {freeUploads}</p> {/* Display remaining uploads */}
       <div {...getRootProps()} style={{ border: "1px dashed #ccc", padding: "20px", marginBottom: "20px" }}>
         <input {...getInputProps()} />
         <label>Image:</label>
@@ -95,7 +120,11 @@ function Upload() {
             style={{ width: "100%", padding: "10px", marginTop: "5px" }}
           ></textarea>
         </div>
-        <button type="submit" style={{ padding: "10px 20px", cursor: "pointer" }}>
+        <button
+          type="submit"
+          style={{ padding: "10px 20px", cursor: "pointer" }}
+          disabled={freeUploads <= 0} // Disable the button if no uploads remain
+        >
           Submit
         </button>
       </form>

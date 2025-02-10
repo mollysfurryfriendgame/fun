@@ -7,6 +7,11 @@ class UserProfile(models.Model):
     total_uploads = models.IntegerField(default=0)
     auth0_sub = models.CharField(max_length=255, unique=True, null=True, blank=True)  # Add auth0_sub field
 
+    def reset_uploads(self):
+        """Reset free uploads to 5 (e.g., after payment)."""
+        self.free_uploads_remaining = 5
+        self.save()
+        
     def __str__(self):
         return self.user.username
 

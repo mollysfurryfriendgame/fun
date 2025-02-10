@@ -86,6 +86,8 @@ const Profile = () => {
     return <Navigate to="/" replace />;
   }
 
+
+  console.log("userProfile: ", userProfile)
   return (
     <div>
       <h2>Welcome, {user.name.split('@')[0] || user.nickname.split('@')[0]}!</h2>
@@ -94,12 +96,16 @@ const Profile = () => {
       <p>{serverResponse}</p>
 
       {userProfile && (
-        <div>
-          <h4>Your Profile Info:</h4>
-          <p>Free Uploads Remaining: {userProfile.free_uploads_remaining}</p>
-          <p>Total Uploads: {userProfile.total_uploads}</p>
-        </div>
-      )}
+
+  <div>
+    <h4>Your Profile Info:</h4>
+    <p>
+      Free Uploads Remaining: {userProfile.profile.free_uploads_remaining ?? "Not available"}
+    </p>
+    <p>Total Uploads: {userProfile.profile.total_uploads ?? "Not available"}</p>
+  </div>
+)}
+
     </div>
   );
 };
