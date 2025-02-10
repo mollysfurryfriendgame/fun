@@ -10,6 +10,8 @@ from .views import (
     delete_animal,
     submit_vote,
     get_random_animals,
+    contact,
+    admin_reset_free_uploads
 )
 
 
@@ -24,4 +26,6 @@ urlpatterns = [
     path('delete-animal/<int:animal_id>/', delete_animal, name='delete_animal'),
     path("get-random-animals/<str:category>/", get_random_animals, name="get_random_animals"),
     path("submit-vote/", submit_vote, name="submit_vote"),
+    path("contact/", contact, name="contact"),
+    path("admin_reset_free_uploads/", admin_reset_free_uploads, name="admin_reset_free_uploads")
 ]

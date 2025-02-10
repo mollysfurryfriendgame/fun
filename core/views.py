@@ -22,6 +22,9 @@ import random
 
 
 
+
+
+
 logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
@@ -342,3 +345,94 @@ def get_random_animals(request, category):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+
+
+
+
+@api_view(['POST'])
+def contact(request):
+    """
+    Handles the contact form submission.
+    """
+    try:
+        title = request.data.get("title")
+        message = request.data.get("message")
+        email = request.data.get("email")
+
+        if not title or not message or not email:
+            return Response(
+                {"error": "All fields (title, message, email) are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Compose the email
+        full_message = f"""
+        You have received a new contact form submission:
+        Title: {title}
+        Message: {message}
+        Email: {email}
+        """
+
+        send_mail(
+            subject=f"Contact Form Submission: {title}",
+            message=full_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["mollysfurryfriendgame@gmail.com"],
+            fail_silently=False,
+        )
+
+        return Response({"message": "Your message has been sent successfully!"}, status=200)
+
+    except Exception as e:
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated, IsSuperStaff])  # Restrict to superstaff users
+def admin_reset_free_uploads(request):
+    """
+    Allow superstaff to reset free uploads for a user by email.
+    """
+    try:
+        email = request.data.get("email")
+        if not email:
+            return Response(
+                {"error": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Fetch the user by email
+        user = User.objects.filter(email=email).first()
+        if not user:
+            return Response(
+                {"error": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Fetch the UserProfile
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            return Response(
+                {"error": "UserProfile not found for the given email."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Reset free uploads
+        user_profile.reset_uploads()
+
+        return Response(
+            {"message": f"Free uploads for {email} have been reset to 5."},
+            status=status.HTTP_200_OK,
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error in admin_reset_free_uploads: {str(e)}")
+        return Response(
+            {"error": f"An unexpected error occurred: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

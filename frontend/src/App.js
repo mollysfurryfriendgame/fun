@@ -14,6 +14,8 @@ import SuperStaffRoute from "./pages/SuperStaffRoute";
 import ReviewUploads from "./pages/ReviewUploads";
 import LocalStorageDisplay from "./components/LocalStorageDisplay"
 import UserProfileDisplay from "./components/UserProfileDisplay"
+import Contact from "./components/Contact";
+import AdminResetFreeUploads from "./pages/AdminResetFreeUploads"
 
 
 function App() {
@@ -27,6 +29,7 @@ function App() {
           <Route path="/fetchtokenbutton" element={<FetchTokenButton />} />
           <Route path="/localStorageDisplay" element={<LocalStorageDisplay />} />
           <Route path="/userProfileDisplay" element={<UserProfileDisplay />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/" element={<Home />} />
           <Route path="/leaderboard" element={<LeaderBoard />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -44,6 +47,12 @@ function App() {
             <Route path="/review-uploads" element={
             <SuperStaffRoute>
               <ReviewUploads />
+            </SuperStaffRoute>
+              }
+            />
+            <Route path="/reset-uploads" element={
+            <SuperStaffRoute>
+              <AdminResetFreeUploads />
             </SuperStaffRoute>
               }
             />

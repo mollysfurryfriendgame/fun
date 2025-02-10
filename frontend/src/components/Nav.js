@@ -21,6 +21,9 @@ const Nav = () => {
       <Link to="/underconstruction" style={{ marginRight: "10px" }}>
         UnderConstruction
       </Link>
+      <Link to="/contact" style={{ marginRight: "10px" }}>
+        Contact
+      </Link>
       <AuthButton />
 
 
@@ -35,6 +38,9 @@ const Nav = () => {
           </Link>
           <Link to="/review-uploads" style={{ marginRight: "10px" }}>
             Review Uploads
+          </Link>
+          <Link to="/reset-uploads" style={{ marginRight: "10px" }}>
+            Reset Uploads
           </Link>
           <Link to="/localStorageDisplay" style={{ marginRight: "10px" }}>
             localStorage Display and Extraction
