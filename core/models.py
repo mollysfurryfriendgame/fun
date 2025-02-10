@@ -11,7 +11,7 @@ class UserProfile(models.Model):
         """Reset free uploads to 5 (e.g., after payment)."""
         self.free_uploads_remaining = 5
         self.save()
-        
+
     def __str__(self):
         return self.user.username
 
@@ -61,10 +61,17 @@ class Upload(models.Model):
 
 
 class Vote(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # Allow null user
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE)
     vote_value = models.IntegerField(default=1)  # 1 for upvote
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'animal')  # Prevent duplicate votes
+        unique_together = ('user', 'animal')  # Prevent duplicate votes per user
+
+    def save(self, *args, **kwargs):
+        """Assign vote to 'non-signup_user' if user is not authenticated."""
+        if self.user is None:
+            non_signup_user, _ = User.objects.get_or_create(username="non-signup_user", defaults={"email": "anonymous@site.com"})
+            self.user = non_signup_user
+        super().save(*args, **kwargs)

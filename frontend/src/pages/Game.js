@@ -45,16 +45,27 @@ const Game = () => {
 
   const handleVote = async (selectedAnimal) => {
     try {
-      const token = await getAccessTokenSilently();
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.sub;
+      let userId = null; // Default to null for anonymous users
+      let token = null;
 
+      // Attempt to get a token if the user is logged in
+      try {
+        token = await getAccessTokenSilently();
+        const decodedToken = jwtDecode(token);
+        userId = decodedToken.sub; // Extract user ID for authenticated users
+      } catch (err) {
+        console.log("No token found. This is an anonymous vote.");
+      }
+
+      // Send the vote to the backend
       const response = await axios.post("http://localhost:8000/submit-vote/", {
         animal_id: selectedAnimal.id,
-        user_id: userId,
+        user_id: userId, // Null for anonymous users
       });
 
       if (response.status === 200) {
+        console.log("Vote recorded successfully");
+
         if (round <= 2) {
           setWinners((prevWinners) => [...prevWinners, selectedAnimal]);
 
@@ -78,6 +89,7 @@ const Game = () => {
     }
   };
 
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -95,7 +107,7 @@ const Game = () => {
 
   return (
     <div className="game-container">
-      <h1>Game - {category.charAt(0).toUpperCase() + category.slice(1)}</h1>
+      <h1>Molly's  {category.charAt(0).toUpperCase() + category.slice(1)}  Game</h1>
       {currentPair.length === 2 ? (
         <div className="pair-container">
           {currentPair.map((animal) => (

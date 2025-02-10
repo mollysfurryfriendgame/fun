@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Leaderboard.css";
+import DonateButton from "../components/DonateButton";
 
 function Leaderboard() {
   const animals = useSelector((state) => state.app.animals) || [];
@@ -48,16 +49,21 @@ function Leaderboard() {
   };
 
   return (
+    <>
+    <div style={{ marginBottom: "20px", textAlign: "center" }}>
+        <DonateButton />
+    </div>
     <div className="leaderboard-container">
-      <h1 className="leaderboard-title">
-        Leaderboard - {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-      </h1>
-
       <div className="text-center mb-4">
         <button className="btn btn-primary" onClick={handlePlayGame}>
           Play Game
         </button>
       </div>
+
+      <h1 className="leaderboard-title">
+        {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Leaderboard
+      </h1>
+
 
       {animals.length > 0 ? (
         <>
@@ -113,6 +119,7 @@ function Leaderboard() {
         <p className="text-center">No animals have been submitted yet.</p>
       )}
     </div>
+    </>
   );
 }
 

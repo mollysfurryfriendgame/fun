@@ -18,9 +18,6 @@ const Nav = () => {
       <Link to="/leaderboard" style={{ marginRight: "10px" }}>
         Leaderboard
       </Link>
-      <Link to="/underconstruction" style={{ marginRight: "10px" }}>
-        UnderConstruction
-      </Link>
       <Link to="/contact" style={{ marginRight: "10px" }}>
         Contact
       </Link>
@@ -48,9 +45,15 @@ const Nav = () => {
           <Link to="/userProfileDisplay" style={{ marginRight: "10px" }}>
             userProfileData
           </Link>
-          <Link to="https://doakmath.github.io/wesleys-dog-game/" style={{ marginRight: "10px" }}>
-            The Original Wesley's Dog Game
+          <Link
+            to="https://doakmath.github.io/wesleys-dog-game/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ marginRight: "10px" }}
+          >
+            The Original: Wesley's Dog Game
           </Link>
+
         </>
       )}
     </nav>

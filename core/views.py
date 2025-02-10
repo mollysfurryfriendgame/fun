@@ -285,21 +285,31 @@ def submit_vote(request):
             animal_id = data.get("animal_id")
             user_sub = data.get("user_id")  # Auth0 `sub` field
 
-            if not animal_id or not user_sub:
-                return JsonResponse({"error": "Animal ID and User ID are required."}, status=400)
+            if not animal_id:
+                return JsonResponse({"error": "Animal ID is required."}, status=400)
 
-            # Debug: Log user_sub being used
-            print(f"Looking for user with auth0_sub: {user_sub}")
+            print(f"Received vote for animal: {animal_id}, user_sub: {user_sub}")
 
-            # Fetch the UserProfile and associated user using `auth0_sub`
-            user_profile = UserProfile.objects.get(auth0_sub=user_sub)
-            user = user_profile.user  # Get the related User instance
-            animal = Animal.objects.get(id=animal_id)
+            # Get the animal
+            try:
+                animal = Animal.objects.get(id=animal_id)
+            except Animal.DoesNotExist:
+                return JsonResponse({"error": "Animal not found."}, status=404)
 
-            # Create or update the vote
+            # Handle authenticated users
+            if user_sub:
+                try:
+                    user_profile = UserProfile.objects.get(auth0_sub=user_sub)
+                    user = user_profile.user  # Get the associated User
+                except UserProfile.DoesNotExist:
+                    return JsonResponse({"error": "UserProfile not found."}, status=404)
+            else:
+                # Assign votes to the "non-signup_user"
+                user, _ = User.objects.get_or_create(username="non-signup_user", defaults={"email": "anonymous@site.com"})
+
+            # Create or update vote
             vote, created = Vote.objects.get_or_create(user=user, animal=animal, defaults={"vote_value": 1})
 
-            # Update vote and increment animal votes
             if not created:
                 vote.vote_value += 1
                 vote.save()
@@ -308,12 +318,9 @@ def submit_vote(request):
             animal.save()
 
             return JsonResponse({"message": "Vote successfully recorded."})
-        except UserProfile.DoesNotExist:
-            return JsonResponse({"error": f"UserProfile with auth0_sub {user_sub} not found."}, status=404)
-        except Animal.DoesNotExist:
-            return JsonResponse({"error": "Animal not found."}, status=404)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
 
 
 
