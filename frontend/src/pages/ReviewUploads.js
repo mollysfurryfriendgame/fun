@@ -80,7 +80,8 @@ function ReviewUploads() {
           {uploads.map((upload) => (
             <li key={upload.id}>
               <p>
-                {upload.name} ({upload.category})
+                {console.log("upload: ", upload)}
+                {upload.name} | ({upload.category}) | {upload.user}
               </p>
               <p>Description: {upload.description}</p> {/* Display description */}
               {upload.image && (

@@ -138,7 +138,6 @@ def get_user_profile(request):
 
 # File: views.py
 
-from .serializers import UserProfileSerializer
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -172,7 +171,8 @@ def upload_animal(request):
 You have a new upload to review:
 Name: {upload.name}
 Category: {upload.category}
-Uploaded By: {upload.user.username}
+Uploaded By: {upload.user.email}
+Image filepath: {upload.image}
 """,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=["mollysfurryfriendgame@gmail.com"],

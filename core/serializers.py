@@ -16,9 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UploadSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()  # Include users username
+
     class Meta:
         model = Upload
-        fields = ['id', 'name', 'category', 'image', 'description']  # Include description
+        fields = ['id', 'name', 'category', 'image', 'description', 'user']  # Add user field
 
 
 class AnimalSerializer(serializers.ModelSerializer):
