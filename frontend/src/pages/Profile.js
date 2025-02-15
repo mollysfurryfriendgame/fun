@@ -88,26 +88,49 @@ const Profile = () => {
 
 
   console.log("userProfile: ", userProfile)
+
   return (
-    <div>
-      <h2>Welcome, {user.name.split('@')[0] || user.nickname.split('@')[0]}!</h2>
-      <h3>{user.email}</h3>
-      <img src={user.picture} alt={`${user.name || user.nickname}'s profile`} />
-      <p>{serverResponse}</p>
+  <div style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+    minHeight: "100vh",
+    paddingTop: "25px" // Moves content closer to the top
+  }}>
+    <h2 style={{ marginBottom: "5px" }}>
+      Welcome, {user.name.split('@')[0] || user.nickname.split('@')[0]}!
+    </h2>
+    <img
+      src={user.picture}
+      alt={`${user.name || user.nickname}'s profile`}
+      style={{
+        borderRadius: "50px",
+        width: "80px",
+        height: "80px",
+        marginBottom: "10px"
+      }}
+    />
+    <p>{serverResponse}</p>
 
-      {userProfile && (
-
-  <div>
-    <h4>Your Profile Info:</h4>
-    <p>
-      Free Uploads Remaining: {userProfile.profile.free_uploads_remaining ?? "Not available"}
-    </p>
-    <p>Total Uploads: {userProfile.profile.total_uploads ?? "Not available"}</p>
+    {userProfile && (
+      <div style={{
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        padding: "15px 20px",
+        borderRadius: "10px",
+        boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+        marginTop: "20px", // Moves the profile info box slightly below the name
+      }}>
+        <h4>Your Profile Info:</h4>
+        <h3>{user.email}</h3>
+        <p>Free Uploads Remaining: {userProfile.profile.free_uploads_remaining ?? "Not available"}</p>
+        <p>Total Uploads: {userProfile.profile.total_uploads ?? "Not available"}</p>
+      </div>
+    )}
   </div>
-)}
+);
 
-    </div>
-  );
+
 };
 
 export default Profile;

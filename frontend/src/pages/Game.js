@@ -5,7 +5,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { setAnimals } from "../redux/slices"; // Assuming this action exists in your Redux slices
 import { jwtDecode } from "jwt-decode";
 import "./Game.css"; // Import the CSS file
-import DonateButton from "../components/DonateButton";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+
 
 const Game = () => {
   const [currentPair, setCurrentPair] = useState([]); // Stores the current pair of animals
@@ -14,6 +15,7 @@ const Game = () => {
   const [round, setRound] = useState(1); // Tracks the current round
   const [loading, setLoading] = useState(true); // Loading state
   const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate(); // Initialize navigation
 
   // Redux state and dispatch
   const category = useSelector((state) => state.app.selectedCategory); // Fetch selected category from Redux
@@ -98,12 +100,29 @@ const Game = () => {
   if (finalWinner) {
     return (
       <>
-      <div className="final-winner-container">
-        <h1>Final Winner: {finalWinner.name}</h1>
-        <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} className="final-winner-image" />
-        <p>{finalWinner.description}</p>
-        <button onClick={() => window.location.reload()}>Play Again</button>
-      </div>
+        <div className="final-winner-container">
+          <h1>Final Winner: {finalWinner.name}</h1>
+          <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} className="final-winner-image" />
+          <p>{finalWinner.description}</p>
+
+          {/* Play Again Button */}
+          <button
+            onClick={() => window.location.reload()}
+            className="game-button"
+            style={{ marginBottom: "10px" }} // ✅ Adds space below the button
+          >
+            Play Again
+          </button>
+
+          {/* See Leaderboard Button */}
+          <button
+            onClick={() => navigate(`/leaderboard/`)}
+            className="game-button"
+          >
+            See Leaderboard
+          </button>
+
+        </div>
       </>
     );
   }

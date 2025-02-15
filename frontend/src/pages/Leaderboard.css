@@ -20,21 +20,26 @@
     margin-bottom: 30px;
   }
 
-  .top-card {
-    position: relative;
-    width: 300px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    text-align: center;
-  }
+  /* Top 3 Cards */
+.top-card {
+  position: relative;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  text-align: center;
+  padding-top: 15px; /* ✅ Adds space between the top of the card and image */
+}
 
-  .top-card img {
-    width: 100%;
-    height: 200px;
-    object-fit: contain; /* Adjusted for uncropped images */
-    background-color: #f8f9fa; /* Optional: Add a background color to fill the area */
-  }
+.top-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain; /* Ensures the full image is shown without cropping */
+  background-color: #f8f9fa;
+  margin-top: 10px; /* ✅ Adds space between the top of the image and the edge */
+  border-radius: 10px; /* Optional: Slightly rounds the corners of the image */
+}
+
 
   .rank-number {
     position: absolute;

@@ -5,6 +5,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ✅ Corrected background image path */
+  background: url("./assets/mffg-background2.png") no-repeat center center fixed;
+  background-size: cover;
+  background-color: #f8f8f8; /* Fallback color */
+  padding: 0;
 }
 
 code {
