@@ -14,18 +14,48 @@ function Dashboard() {
         navigate("/leaderboard"); // Redirect to leaderboard
     };
 
+    // Manually entered previous winners (until automated with a cron job)
+    const previousWinners = {
+        dog: {
+            name: "Moonie",
+            submittedBy: "doakmath",
+            shelter: "Austin Animal Shelter",
+            donation: "$X.XX",
+            image: "http://localhost:8000/media/upload_images/IMG_3815.jpeg",
+        },
+        cat: {
+            name: "Space Cat",
+            submittedBy: "catlover99",
+            shelter: "NYC Cat Rescue",
+            donation: "$Y.YY",
+            image: "http://localhost:8000/media/upload_images/SpaceCat.png",
+        },
+        horse: {
+            name: "Thunder",
+            submittedBy: "equestrian_girl",
+            shelter: "Wild Horse Sanctuary",
+            donation: "$Z.ZZ",
+            image: "http://localhost:8000/media/upload_images/horse.png",
+        },
+        bunbun: {
+            name: "Mr Bun Bun",
+            submittedBy: "matthewdoak369",
+            shelter: "Bunny Haven",
+            donation: "$A.AA",
+            image: "http://localhost:8000/media/upload_images/IMG_3875.jpeg",
+        },
+    };
+
     return (
         <div>
-            {/* Container for Cards */}
             <div className="dashboard-cards" style={{
                 display: "flex",
                 justifyContent: "center",
                 gap: "20px",
-                flexWrap: "wrap" // Ensures responsiveness
+                flexWrap: "wrap",
             }}>
-
-                {/* Game Categories */}
-                {["dog", "cat", "horse", "bunbun"].map((category, index) => (
+                {/* Map over categories and use unique data for each */}
+                {Object.keys(previousWinners).map((category, index) => (
                     <div
                         key={index}
                         className="card"
@@ -34,8 +64,8 @@ function Dashboard() {
                             padding: "20px",
                             border: "1px solid #ccc",
                             borderRadius: "10px",
-                            maxWidth: "250px", // Adjust for uniform width
-                            boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)", // Soft shadow effect
+                            maxWidth: "250px",
+                            boxShadow: "2px 2px 10px rgba(0, 0, 0, 0.1)",
                             backgroundColor: "#fff",
                         }}
                     >
@@ -51,7 +81,7 @@ function Dashboard() {
                                 cursor: "pointer",
                                 fontSize: "16px",
                                 marginBottom: "15px",
-                                width: "100%", // Full width button
+                                width: "100%",
                             }}
                         >
                             Play {category.charAt(0).toUpperCase() + category.slice(1)} Game
@@ -64,10 +94,10 @@ function Dashboard() {
 
                         {/* Winner Image */}
                         <img
-                            src={`http://localhost:8000/media/upload_images/IMG_3815.jpeg`}
-                            alt="Dog Winner"
+                            src={previousWinners[category].image}
+                            alt={`${category} Winner`}
                             style={{
-                                width: "100%", // Make image fill the card width
+                                width: "100%",
                                 height: "200px",
                                 display: "block",
                                 margin: "0 auto",
@@ -78,11 +108,11 @@ function Dashboard() {
 
                         {/* Winner Details */}
                         <p style={{ fontSize: "18px", fontWeight: "bold", marginTop: "10px" }}>
-                            Name: Moonie
+                            Name: {previousWinners[category].name}
                         </p>
-                        <p>Submitted by: doakmath</p>
-                        <p>Chosen Shelter: Austin Animal Shelter</p>
-                        <p>Amount Donated: $X.XX</p>
+                        <p>Submitted by: {previousWinners[category].submittedBy}</p>
+                        <p>Chosen Shelter: {previousWinners[category].shelter}</p>
+                        <p>Amount Donated: {previousWinners[category].donation}</p>
                     </div>
                 ))}
             </div>
