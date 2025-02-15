@@ -22,21 +22,23 @@ const Game = () => {
   const category = useSelector((state) => state.app.selectedCategory);
   const animals = useSelector((state) => state.app.animals);
 
-  useEffect(() => {
-    const fetchAnimals = async () => {
-      if (category) {
-        try {
-          const response = await axios.get(`http://localhost:8000/get-random-animals/${category}`);
-          const shuffled = response.data.sort(() => 0.5 - Math.random()).slice(0, 6);
-          dispatch(setAnimals(shuffled));
-          setCurrentPair([shuffled[0], shuffled[1]]);
-          setLoading(false);
-        } catch (error) {
-          console.error("Failed to fetch animals:", error.message);
-          setLoading(false);
-        }
+  const fetchAnimals = async () => {
+    if (category) {
+      try {
+        setLoading(true);
+        const response = await axios.get(`http://localhost:8000/get-random-animals/${category}`);
+        const shuffled = response.data.sort(() => 0.5 - Math.random()).slice(0, 6);
+        dispatch(setAnimals(shuffled));
+        setCurrentPair([shuffled[0], shuffled[1]]);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to fetch animals:", error.message);
+        setLoading(false);
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchAnimals();
   }, [category, dispatch]);
 
@@ -53,7 +55,6 @@ const Game = () => {
         console.log("No token found. This is an anonymous vote.");
       }
 
-      // Send a vote to the backend
       await axios.post("http://localhost:8000/submit-vote/", {
         animal_id: selectedAnimal.id,
         user_id: userId,
@@ -61,7 +62,6 @@ const Game = () => {
 
       if (round === 1) {
         setWinners((prevWinners) => [...prevWinners, selectedAnimal]);
-
         const nextIndex = animals.indexOf(currentPair[1]) + 1;
         if (nextIndex < animals.length - 1) {
           setCurrentPair([animals[nextIndex], animals[nextIndex + 1]]);
@@ -69,30 +69,23 @@ const Game = () => {
           setRound(2);
           setCurrentPair([winners[0], winners[1]]);
         }
-      }
-      else if (round === 2) {
+      } else if (round === 2) {
         setFinalists((prevFinalists) => [...prevFinalists, selectedAnimal]);
-
         if (finalists.length === 0) {
           setCurrentPair([selectedAnimal, winners[2]]);
         } else {
           setFinalWinner(selectedAnimal);
-
-          // ✅ Final winner gets an **additional bonus vote**
           await axios.post("http://localhost:8000/submit-vote/", {
             animal_id: selectedAnimal.id,
             user_id: userId,
           });
-
           console.log(`Bonus vote awarded to ${selectedAnimal.name}`);
         }
       }
     } catch (error) {
       console.error("Failed to submit vote:", error.response?.data?.error || error.message);
     }
-};
-
-
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -104,30 +97,25 @@ const Game = () => {
         <h1>Final Winner: {finalWinner.name}</h1>
         <img src={`http://localhost:8000${finalWinner.image}`} alt={finalWinner.name} className="final-winner-image" />
         <p>{finalWinner.description}</p>
-
-        {/* ✅ Play Again Button now resets state instead of reloading */}
         <button
           onClick={() => {
-            setFinalWinner(null); // Reset final winner
-            setWinners([]); // Clear winners
-            setFinalists([]); // Clear finalists
-            setRound(1); // Reset round
-            setCurrentPair([animals[0], animals[1]]); // Restart the game with the same category
+            setFinalWinner(null);
+            setWinners([]);
+            setFinalists([]);
+            setRound(1);
+            fetchAnimals();
           }}
           className="game-button"
           style={{ marginBottom: "10px" }}
         >
           Play Again
         </button>
-
-        {/* ✅ Ensure See Leaderboard still works correctly */}
         <button onClick={() => navigate(`/leaderboard/`)} className="game-button">
           See Leaderboard
         </button>
       </div>
     );
-}
-
+  }
 
   return (
     <div className="game-container">
