@@ -443,3 +443,21 @@ def admin_reset_free_uploads(request):
             {"error": f"An unexpected error occurred: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+def current_leaderboard_winners(request):
+    categories = ["dog", "cat", "horse", "bunbun"]
+    winners = {}
+
+    for category in categories:
+        top_animal = Animal.objects.filter(category=category).order_by("-votes").first()
+        if top_animal:
+
+            winners[category] = {
+                "name": top_animal.name,
+                "submittedBy": top_animal.user.first_name,  # Now pulling from UserProfile
+                "image": top_animal.image.url if top_animal.image else "",
+                "votes": top_animal.votes
+            }
+
+    return JsonResponse(winners)
