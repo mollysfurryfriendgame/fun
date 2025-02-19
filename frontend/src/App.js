@@ -17,6 +17,7 @@ import UserProfileDisplay from "./components/UserProfileDisplay"
 import Contact from "./components/Contact";
 import AdminResetFreeUploads from "./pages/AdminResetFreeUploads"
 import DonateButton from "./components/DonateButton";
+import logo from "./assets/logo2.png";
 
 
 function App() {
@@ -25,7 +26,18 @@ function App() {
       <Router>
         <Nav />
         <div>
-          <h1>Molly’s Furry Friend Game</h1>
+        <div style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "20px"
+}}>
+    <img
+        src={logo}
+        alt="Molly's Furry Friend Game Logo"
+        style={{ maxWidth: "250px", height: "auto", background: "transparent" }}
+    />
+</div>
           <DonateButton />
           <Routes>
           <Route path="/fetchtokenbutton" element={<FetchTokenButton />} />
