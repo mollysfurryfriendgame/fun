@@ -6,7 +6,7 @@ body {
     padding: 0;
 }
 h1 {
-    color: #007bff;
+    color: #060606;
     text-align: center;
 }
 button {
@@ -43,3 +43,12 @@ nav {
   nav a:hover {
     text-decoration: underline;
   }
+
+
+  /* * {
+    font-family: "Playfair Display", serif;
+} */
+
+h1, h2, h3 {
+  font-family: "Playfair Display", serif;
+}

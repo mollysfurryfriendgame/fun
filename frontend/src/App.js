@@ -18,6 +18,8 @@ import Contact from "./components/Contact";
 import AdminResetFreeUploads from "./pages/AdminResetFreeUploads"
 import DonateButton from "./components/DonateButton";
 import logo from "./assets/logo2.png";
+import About from "./pages/About";
+import PreviousWinners from "./pages/PreviousWinners";
 
 
 function App() {
@@ -44,6 +46,8 @@ function App() {
           <Route path="/localStorageDisplay" element={<LocalStorageDisplay />} />
           <Route path="/userProfileDisplay" element={<UserProfileDisplay />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/previous-winners" element={<PreviousWinners />} />
+          <Route path="/about" element={<About />} />
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/leaderboard" element={<LeaderBoard />} />
           <Route path="/" element={<Dashboard />} />
